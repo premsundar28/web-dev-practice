@@ -11,7 +11,6 @@ app.use('/api/v1/user',userRoutes);
 async function main() {
      
     try {
-       
         const connection = await mongoose.connect(process.env.MONGODB_URI);
         console.log("Connected to the database");
     } catch(error) {

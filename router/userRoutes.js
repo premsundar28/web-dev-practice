@@ -1,11 +1,13 @@
+const express = require('express');
 const {Router} = require('express');
 const {userModel} = require('../db');
 const jwt = require('jsonwebtoken');    
 const bcrypt = require('bcrypt'); 
 const dotenv = require('dotenv');
 
-
 const router = Router(); 
+require('dotenv').config();
+
 
 router.post('/register', async (req, res) => {
     const { email, password } = req.body;
@@ -31,6 +33,36 @@ router.post('/register', async (req, res) => {
 
     } catch (error) {
         console.log("Error in user registration", error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+router.post('/signin', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await userModel.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+
+        const token = jwt.sign(
+            { id: user._id },
+            process.env.JWT_USER_PASSWORD,
+            { expiresIn: '1h' }
+        );
+
+        res.json({ token });
+
+    } catch (error) {
+        console.log("Error in user sign-in", error);
         res.status(500).json({ message: error.message });
     }
 });
