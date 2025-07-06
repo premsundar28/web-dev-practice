@@ -3,6 +3,7 @@ const userRoutes = require('./router/userRoutes');
 require('dotenv').config();
 const mongoose = require('mongoose');
 
+
 const app = express();
 app.use(express.json()); // Parse JSON bodies
 

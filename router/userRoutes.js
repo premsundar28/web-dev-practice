@@ -4,9 +4,13 @@ const {userModel} = require('../db');
 const jwt = require('jsonwebtoken');    
 const bcrypt = require('bcrypt'); 
 const dotenv = require('dotenv');
+const { userMiddleware } = require('../middleware/user');
+const { config } = require("../configure");
+
 
 const router = Router(); 
 require('dotenv').config();
+
 
 
 router.post('/register', async (req, res) => {
@@ -66,5 +70,29 @@ router.post('/signin', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+router.get('/getUser', userMiddleware ,async (req, res) => {
+    const token = req.headers.token;
+
+    if (!token) {
+        return res.status(403).json({ message: 'No token provided' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_USER_PASSWORD);
+        const user = await userModel.findById(decoded.id).select('-password');
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json(user);
+
+    } catch (error) {
+        console.log("Error in getting user", error);
+        res.status(500).json({ message: error.message });
+    }
+
+})
 
 module.exports = router;
