@@ -12,7 +12,7 @@ app.use('/api/v1/user',userRoutes);
 async function main() {
      
     try {
-        const connection = await mongoose.connect(process.env.MONGODB_URI);
+        const connection = await mongoose.connect(process.env.MONGO_URI);
         console.log("Connected to the database");
     } catch(error) {
          console.log("Failed to connect to the database", error)

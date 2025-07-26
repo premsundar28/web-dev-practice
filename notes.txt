@@ -1,0 +1,5 @@
+to build docker : docker build -t my-node-app .
+
+docker compose up: docker-compose up --build
+
+to stop : docker-compose down
